@@ -1,66 +1,71 @@
 #!/usr/bin/python3
 
 import csv
+import pprint
 """
-This will create a document that allows me to update my job search
+This will create/update a document that allows me to update my job search
 The spreadsheet will have fields for:
 -----------------------------------------------
 company | date applied | email | company site |
 -----------------------------------------------
 """
-jobApplied = {}
+myHeaders = ['Company','City','State','Address','Job Title']
+def newFile():
+    print("Enter your headers")
+    while len(myHeaders) < 5:
+        newHeader = input("Enter a header")
+        myHeaders.append(newHeader)
+    print("These are your headers" + str(myHeaders))
+    newDataFile = open("example.csv",'w', newline='')
+    iniitalDataFile = csv.DictWriter(newDataFile,myHeaders)
+    initialDataFile.writeheader()
 
-myFile = 'job_search.csv'
 
-fieldnames = ["Company", "Date Applied", "Website", "Email"]
 
-def usrQuest():
+# for reading my previous applications
+def readObject():
+    jobFile = open('applications.csv')
+    readJobFile = csv.DictReader(jobFile)
+    print("This is your current document")
+    for row in readJobFile:
+        print("#" + str(readJobFile.line_num) +""+ row['Company']+row['City'])
+    usrDone = input("Enter 'q' to close")
+    if usrDone == 'q':
+        jobFile.close()
+
+jobList = {'Company':'','City':'', 'City':'','State':'','Address':'','Job Title':''}
+def writeObject():
+    fileToWrite = open('applications.csv','w',newline='')
+    writerObject = csv.DictWriter(fileToWrite, myHeaders)
+    writerObject.writeheader()
     while True:
-        companyName = input("What is the name of the company ? :")
-        dateApplied = input("When did you apply? : ")
-        companySite = input("What is the company's website? : ")
-        companyEmail = input("Email for company contact")
+        jobCompany = input("What is the name of the company?")
+        jobList['Company'] = jobCompany
 
-        #This sets key values for jobApplied dictionary
-        jobApplied["Company"] = companyName
-        jobApplied["Date Applied"] = dateApplied
-        jobApplied["Website"] = companySite
-        jobApplied["Email"] = companyEmail
-        #Rows are stored as indexes.
-        jobRow = {
-            "Company": companyName,
-            "Date Applied": dateApplied,
-            "Website": companySite,
-            "Email": companyEmail
-            }
+        jobCity = input("What city is the job in?")
+        jobList['City'] = jobCity
 
-        csv_writer.writerow(jobRow)
+        jobState = input("What state is the job in?")
+        jobList['State'] = jobState
 
-        usrChoice = input("Do you want to add another? :")
-        if usrChoice == 'y':
-            continue
-        elif usrChoice == 'n':
+
+        jobAddy = input("What is the address?")
+        jobList['Address'] = jobAddy
+
+        jobTitle = input("What is the position?")
+        jobList['Job Title'] = jobTitle
+
+        writerObject.writerow(jobList)
+        print("Press 'q' to quit or 'enter' to continue")
+        usrChoice = input()
+        if usrChoice == 'q':
             break
+        else:
+            continue
+    fileToWrite.close()
 
-def newDocument():
-    global csv_writer
-    with open(myFile,"w+") as csv_file:
-        csv_reader = csv.DictReader(csv_file, fieldnames)
-        csv_writer = csv.DictWriter(csv_file, fieldnames = fieldnames) #allows us to write to file. We pass csv file as argument
-        #header names
-        usrQuest()
+    # print("Options: r - read , e - edit")
+    # doc_action = input("What do you want to do with this document?")
 
-def update_CSV():
-    global csv_writer
-    with open(myFile,'a+',newline='') as update_obj:
-        csv_writer = csv.DictWriter(update_obj, fieldnames = fieldnames)
-        usrQuest()
-
-print("Are you creating a new file updating an existing one?")
-
-usr_choice = input("Enter 'N' for new document or 'U' to update existing")
-
-if usr_choice == 'n':
-    newDocument()
-elif usr_choice == 'u':
-    update_CSV()
+writeObject()
+readObject()
